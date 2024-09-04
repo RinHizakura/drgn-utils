@@ -24,7 +24,7 @@ def bus_to_subsys(prog, bus):
     ):
         if sp.bus == bus:
             return sp
-    return NULL(bus.prog_, "struct subsys_private *")
+    return None
 
 class ToDev():
     def to_platform_dev(d):
@@ -38,6 +38,8 @@ class ToDev():
 
 def get_busdev(prog, bus, dev):
     sp = bus_to_subsys(prog, prog[f"{bus}_bus_type"].address_of_())
+    if not sp:
+        return None
 
     for priv in list_for_each_entry(
         "struct device_private", sp.klist_devices.k_list.address_of_(), "knode_bus.n_node"
