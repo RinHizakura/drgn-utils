@@ -8,7 +8,7 @@ from drgn.helpers.common import *
 from drgn.helpers.linux import *
 from drgn import container_of
 
-class_list = ["hwmon", "net"]
+class_list = ["hwmon", "rtc", "net"]
 bus_list = ["platform", "usb", "pci"]
 
 
@@ -58,6 +58,9 @@ class ToDev:
 
     def to_hwmon_dev(d):
         return container_of(d, "struct hwmon_device", "dev")
+
+    def to_rtc_dev(d):
+        return container_of(d, "struct rtc_device", "dev")
 
     def to_net_dev(d):
         return "todo"
