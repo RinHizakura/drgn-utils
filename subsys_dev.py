@@ -28,7 +28,8 @@ def bus_to_subsys(prog, bus):
         prog["bus_kset"].list.address_of_(),
         "subsys.kobj.entry",
     ):
-        if sp.bus == bus:
+        name = sp.bus.name.string_().decode("utf-8")
+        if name == bus:
             return sp
     return None
 
@@ -39,7 +40,8 @@ def class_to_subsys(prog, cls):
         prog["class_kset"].list.address_of_(),
         "subsys.kobj.entry",
     ):
-        if getattr(sp, "class") == cls:
+        name = getattr(sp, "class").name.string_().decode("utf-8")
+        if name == cls:
             return sp
     return None
 
@@ -62,7 +64,7 @@ class ToDev:
 
 
 def get_busdev(prog, bus, dev):
-    sp = bus_to_subsys(prog, prog[f"{bus}_bus_type"].address_of_())
+    sp = bus_to_subsys(prog, bus)
     if not sp:
         return None
 
@@ -85,7 +87,7 @@ def get_busdev(prog, bus, dev):
 
 
 def get_classdev(prog, cls, dev):
-    sp = class_to_subsys(prog, prog[f"{cls}_class"].address_of_())
+    sp = class_to_subsys(prog, cls)
     if sp == None:
         return None
 
