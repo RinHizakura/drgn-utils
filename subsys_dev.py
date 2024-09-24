@@ -45,27 +45,6 @@ def class_to_subsys(prog, cls):
             return sp
     return None
 
-
-class ToDev:
-    def to_platform_dev(d):
-        return container_of(d, "struct platform_device", "dev")
-
-    def to_usb_dev(d):
-        return "todo"
-
-    def to_pci_dev(d):
-        return container_of(d, "struct pci_dev", "dev")
-
-    def to_hwmon_dev(d):
-        return container_of(d, "struct hwmon_device", "dev")
-
-    def to_rtc_dev(d):
-        return container_of(d, "struct rtc_device", "dev")
-
-    def to_net_dev(d):
-        return "todo"
-
-
 def get_busdev(prog, bus, dev):
     sp = bus_to_subsys(prog, bus)
     if not sp:
@@ -106,6 +85,28 @@ def get_classdev(prog, cls, dev):
 
     return None
 
+class ToDev:
+    def to_platform_dev(d):
+        return container_of(d, "struct platform_device", "dev")
+
+    def to_usb_dev(d):
+        return "todo"
+
+    def to_pci_dev(d):
+        return container_of(d, "struct pci_dev", "dev")
+
+    def to_hwmon_dev(d):
+        return container_of(d, "struct hwmon_device", "dev")
+
+    def to_rtc_dev(d):
+        return container_of(d, "struct rtc_device", "dev")
+
+    def to_net_dev(d):
+        return "todo"
+
+def to_subsys_dev(subsys, device):
+    to_dev = getattr(ToDev, f"to_{subsys}_dev")
+    return to_dev(device)
 
 if __name__ == "__main__":
     args = get_args()
@@ -117,6 +118,4 @@ if __name__ == "__main__":
     if not device:
         exit(f"Can't find {dev} on {subsys} bus/class")
 
-    to_dev = getattr(ToDev, f"to_{subsys}_dev")
-    inner_dev = to_dev(device)
-    print(inner_dev)
+    print(to_subsys_dev(subsys, device))
