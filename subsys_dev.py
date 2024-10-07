@@ -90,7 +90,7 @@ class ToDev:
         return container_of(d, "struct platform_device", "dev")
 
     def to_usb_dev(d):
-        return "todo"
+        return container_of(d, "struct usb_device", "dev")
 
     def to_pci_dev(d):
         return container_of(d, "struct pci_dev", "dev")
