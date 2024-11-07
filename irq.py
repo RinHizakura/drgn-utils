@@ -15,6 +15,21 @@ IRQ_TYPE_LEVEL_LOW = 0x00000008
 IRQ_TYPE_LEVEL_MASK = (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH)
 IRQ_TYPE_SENSE_MASK = 0x0000000f
 
+def _sparse_irq_supported(prog):
+    try:
+        # Since Linux kernel commit 721255b9826b ("genirq: Use a maple
+        # tree for interrupt descriptor management") (in v6.5), sparse
+        # irq descriptors are stored in a maple tree.
+        _ = prog["sparse_irqs"]
+        return True, "maple"
+    except KeyError:
+        # Before that, they are in radix tree.
+        try:
+            _ = prog["irq_desc_tree"]
+            return True, "radix"
+        except KeyError:
+            return False, None
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("irq", type=int, help="number of the irq")
@@ -22,7 +37,11 @@ def get_args():
     return args
 
 def irq_to_desc(irq):
-    addr = radix_tree_lookup(prog["irq_desc_tree"].address_of_(), irq)
+    _, tree_type = _sparse_irq_supported(prog)
+    if tree_type == "radix":
+        addr = radix_tree_lookup(prog["irq_desc_tree"].address_of_(), irq)
+    else:
+        addr = mtree_load(prog["sparse_irqs"].address_of_(), irq)
     return Object(prog, "struct irq_desc", address=addr).address_of_()
 
 def irq_settings_get_trigger_mask(desc):
