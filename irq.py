@@ -36,7 +36,7 @@ def get_args():
     args = parser.parse_args()
     return args
 
-def irq_to_desc(irq):
+def irq_to_desc(prog, irq):
     _, tree_type = _sparse_irq_supported(prog)
     if tree_type == "radix":
         addr = radix_tree_lookup(prog["irq_desc_tree"].address_of_(), irq)
@@ -47,15 +47,16 @@ def irq_to_desc(irq):
 def irq_settings_get_trigger_mask(desc):
     return desc.status_use_accessors & IRQ_TYPE_SENSE_MASK
 
-args = get_args()
-irq = args.irq
+if __name__ == "__main__":
+    args = get_args()
+    irq = args.irq
 
-print(f"Get information of irq {irq}")
+    print(f"Get information of irq {irq}")
 
-desc = irq_to_desc(irq)
-domain = desc.irq_data.domain
+    desc = irq_to_desc(prog, irq)
+    domain = desc.irq_data.domain
 
-print(desc)
-print("trigger = ", irq_settings_get_trigger_mask(desc))
+    print(desc)
+    print("trigger = ", irq_settings_get_trigger_mask(desc))
 
-print(domain)
+    print(domain)
