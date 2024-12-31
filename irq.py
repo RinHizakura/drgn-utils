@@ -58,5 +58,6 @@ if __name__ == "__main__":
 
     print(desc)
     print("trigger = ", irq_settings_get_trigger_mask(desc))
+    print("action thread_fn = ", desc.action.thread_fn)
 
     print(domain)
