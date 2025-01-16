@@ -102,7 +102,7 @@ class ToDev:
         return container_of(d, "struct rtc_device", "dev")
 
     def to_net_dev(d):
-        return "todo"
+        return container_of(d, "struct net_device", "dev")
 
 def to_subsys_dev(subsys, device):
     to_dev = getattr(ToDev, f"to_{subsys}_dev")
