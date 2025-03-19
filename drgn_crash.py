@@ -63,6 +63,16 @@ memory = number_in_binary_units(total)
 
 load = ", ".join([f"{v:.2f}" for v in loadavg(prog)])
 
+panic = ""
+
+cpu = prog["crashing_cpu"]
+task = per_cpu(prog["runqueues"], cpu).curr
+task_addr = task.value_()
+comm = task.comm.string_().decode("utf-8")
+pid = task.pid
+# Check: https://man7.org/linux/man-pages/man1/ps.1.html#PROCESS_STATE_CODES
+state = task_state_to_char(task)
+
 print(f'CPUS: {cpus}')
 print(f'DATE: {date}')
 print(f'UPTIME: {uptime}')
@@ -73,3 +83,9 @@ print(f'RELEASE : {release}')
 print(f'VERSION : {version}')
 print(f'MACHINE : {machine}')
 print(f'MEMORY : {memory}')
+print(f"PANIC: {panic}")
+print(f"PID: {int(pid)}")
+print(f"COMM: \"{comm}\"")
+print(f"TASK: {hex(task_addr)}")
+print(f"CPU: {int(cpu)}")
+print(f"STATE: {state}")
