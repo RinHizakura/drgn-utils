@@ -46,10 +46,12 @@ def class_to_subsys(prog, cls):
             return sp
     return None
 
-def get_busdev(prog, bus, dev):
+def get_busdev_childs(prog, bus, dev):
     sp = bus_to_subsys(prog, bus)
     if not sp:
         return None
+
+    childs = []
 
     for priv in list_for_each_entry(
         "struct device_private",
@@ -57,22 +59,20 @@ def get_busdev(prog, bus, dev):
         "knode_bus.n_node",
     ):
         device = priv.device
-        device_name = device.kobj.name.string_().decode("utf-8")
-        if device_name == dev:
-            return device
+        name = device.kobj.name.string_().decode("utf-8")
+        parent = device.parent
+        parent_name = parent.kobj.name.string_().decode("utf-8")
+        if parent_name == dev:
+            childs.append(device)
 
-    return None
+    return childs
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dev", help="name of the specified device")
-    args = parser.parse_args()
-    return args
-
-
-def get_classdev(prog, cls, dev):
+def get_classdev_childs(prog, cls, dev):
     sp = class_to_subsys(prog, cls)
     if sp == None:
         return None
+
+    childs = []
 
     for priv in list_for_each_entry(
         "struct device_private",
@@ -80,20 +80,24 @@ def get_classdev(prog, cls, dev):
         "knode_class.n_node",
     ):
         device = priv.device
-        device_name = device.kobj.name.string_().decode("utf-8")
-        if device_name == dev:
-            return device
+        name = device.kobj.name.string_().decode("utf-8")
+        parent = device.parent
+        parent_name = device.kobj.name.string_().decode("utf-8")
+        if parent_name == dev:
+            childs.append(device)
 
-    return None
+    return childs
+
 
 if __name__ == "__main__":
     args = get_args()
     subsys = args.subsys
     dev = args.dev
 
-    get_dev = get_busdev if subsys in bus_list else get_classdev
-    device = get_dev(prog, subsys, dev)
-    if not device:
-        exit(f"Can't find {dev} on {subsys} bus/class")
-
-    print(to_subsys_dev(subsys, device))
+    # FIXME: Brute forcely
+    get_childs = get_busdev_childs if subsys in bus_list else get_classdev_childs
+    childs = get_childs(prog, subsys, dev)
+    print(f"The childs of {dev} is:")
+    for d in childs:
+         name = d.kobj.name.string_().decode("utf-8")
+         print(f"\t{name}: {d.power.runtime_status}")
