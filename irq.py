@@ -57,6 +57,7 @@ if __name__ == "__main__":
     domain = desc.irq_data.domain
 
     print(desc)
+    print("irq_common_data = ", desc.irq_common_data)
     print("trigger = ", irq_settings_get_trigger_mask(desc))
     print("action thread_fn = ", desc.action.thread_fn)
 
