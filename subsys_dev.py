@@ -4,7 +4,8 @@ import os, sys
 import argparse
 
 import drgn
-from dev_util import *
+
+from .dev_util import *
 
 class_list = ["hwmon", "rtc", "net"]
 bus_list = ["platform", "usb", "pci"]
