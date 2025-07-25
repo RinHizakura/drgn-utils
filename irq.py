@@ -47,6 +47,9 @@ def irq_to_desc(prog, irq):
 def irq_settings_get_trigger_mask(desc):
     return desc.status_use_accessors & IRQ_TYPE_SENSE_MASK
 
+def irq_desc_get_chip(desc):
+    return desc.irq_data.chip
+
 if __name__ == "__main__":
     args = get_args()
     irq = args.irq
@@ -58,7 +61,13 @@ if __name__ == "__main__":
 
     print(desc)
     print("irq_common_data = ", desc.irq_common_data)
+    print("irq_chip = ", irq_desc_get_chip(desc))
     print("trigger = ", irq_settings_get_trigger_mask(desc))
     print("action thread_fn = ", desc.action.thread_fn)
-
     print(domain)
+
+    print(f"Get parent information of irq {irq}")
+    parent = desc.irq_data.parent_data
+    while parent:
+        print(parent)
+        parent = parent.parent_data
