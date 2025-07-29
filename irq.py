@@ -69,5 +69,6 @@ if __name__ == "__main__":
     print(f"Get parent information of irq {irq}")
     parent = desc.irq_data.parent_data
     while parent:
+        print(f"{parent.chip.name}:")
         print(parent)
         parent = parent.parent_data
