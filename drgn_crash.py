@@ -52,6 +52,13 @@ def get_memory_size(prog):
             total = next_gig
     return total
 
+def uptime_formatted(prog):
+    seconds = ktime_get_boottime_seconds(prog).value_()
+    return str(datetime.timedelta(seconds=seconds))
+
+def date_formatted(prog):
+    seconds = ktime_get_boottime_seconds(prog).value_()
+    return time.ctime(seconds)
 
 # Reference: https://github.com/crash-utility/crash/blob/master/task.c#L6351
 def get_panicmsg(prog):
@@ -98,10 +105,10 @@ release = uts_namespace_detail.name.release.string_().decode("utf-8")
 version = uts_namespace_detail.name.version.string_().decode("utf-8")
 machine = uts_namespace_detail.name.machine.string_().decode("utf-8")
 
-timekeeper = prog["tk_core"].shadow_timekeeper
-xtime_sec = timekeeper.xtime_sec
-date = time.ctime(xtime_sec)
-uptime = str(datetime.timedelta(seconds=int(timekeeper.ktime_sec)))
+#timekeeper = timekeeping._tk_core(prog).shadow_timekeeper
+#xtime_sec = timekeeper.xtime_sec
+date = date_formatted(prog)
+uptime_v = uptime_formatted(prog)
 
 cpus = len(list(for_each_possible_cpu(prog)))
 tasks = len(list(for_each_pid(prog)))
@@ -131,7 +138,7 @@ state = task_state_to_char(task)
 
 print(f"CPUS: {cpus}")
 print(f"DATE: {date}")
-print(f"UPTIME: {uptime}")
+print(f"UPTIME: {uptime_v}")
 print(f"LOAD AVERAGE: {load}")
 print(f"TASKS: {tasks}")
 print(f"NODENAME : {nodename}")
