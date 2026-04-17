@@ -26,3 +26,4 @@ if not task:
 task_addr = hex(task.value_())
 print(f"task_struct@{task_addr}: \n{task}")
 print(f"sched_entity:\n{task.se}")
+print(f"stack={kernel_stack_trace(task)}")
